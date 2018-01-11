@@ -29,10 +29,6 @@ def gen_string(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 def client():
-    #if(len(sys.argv) < 3) :
-    #    print 'Usage : python chat-client.py <server> <port>'
-    #    sys.exit(0)
-
     host = ''
     port = 3435
     #host = sys.argv[1]
