@@ -5,11 +5,8 @@
 # Print format:
 #   On/Offline     Key          Hostname         User              IP      Package Status
 #   If data       KEY$       gethostbyname()  getpass.getuser()    addr          ??
-import sys, socket, select, os
 
-#if (len(sys.argv) < 2):
-#    print("Usage: python main_controller.py <port>")
-#    sys.exit(0)
+import sys, socket, select, os
 
 host = ''
 port = 3435
