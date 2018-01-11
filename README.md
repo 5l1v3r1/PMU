@@ -8,7 +8,7 @@
 	Name: Package Manager Unlimited (PMU)
 	Files: server.py, CommandShellConnect.py, client.py
   
-	Installation: Put the client.py in start-up as Root.**
+	Installation: Put the client.py in start-up as Root.
   
 	Theory Craft:
 	Client creates a key to connect with a remote server that sends command and data to controll the client.
