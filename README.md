@@ -1,5 +1,5 @@
 # PMU
-**P**ackage **M**anager **U**nlimited is a RAT for Linux
+**P**ackage **M**anager **U**nlimited is a RAT for Linux coded in Python
 
 ---
 
