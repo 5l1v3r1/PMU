@@ -1,9 +1,9 @@
 # PMU
-Package Manager Unlimited is a RAT for Linux
+**P**ackage **M**anager **U**nlimited is a RAT for Linux
 
 ---
 
-# Remote Package Managers for Linux (Python)
+# Remote Package Manager for Linux (Python)
 
 	Name: Package Manager Unlimited (PMU)
 	Files: server.py, CommandShellConnect.py, client.py
