@@ -52,7 +52,7 @@
 
 # Client installation:
 	Server IP \> 10.0.0.1
-	
+	Port \> PTOV2
 	Authentication Key \> PTOV2
 	
 	*Do magic*
