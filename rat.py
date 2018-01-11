@@ -12,7 +12,7 @@ import sys, os, socket, select, time, datetime, getpass
 
 host = raw_input('IP \> ')
 port = input('Port \> ')
-_key = raw_input('Key \> ')
+_key = raw_input('Authentication Key \> ')
 
 def connector():
     server = socket.socket(socket.AF_INET)
