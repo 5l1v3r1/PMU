@@ -1,8 +1,9 @@
 ![alt text](http://leonvoerman.nl/coding/rat.png)
 
-# PMU (Pre-Alpha)
-**P**ackage **M**anager **U**nlimited is a RAT for Linux coded with Python
+# PMU (pre-Alpha)
+**P**ackage **M**anager **U**nlimited is a RAT for Linux coded with Python.
 
+This version is for test only!
 ---
 
 # Remote Package Manager for Linux (Python)
