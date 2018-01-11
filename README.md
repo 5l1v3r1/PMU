@@ -61,3 +61,4 @@
 	
 	Startup >> Connect >> Send Key >> Authenticate >> Allow or deny socket
 	
+	Put the client.py in start-up as Root
