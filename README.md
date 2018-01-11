@@ -11,7 +11,7 @@ This version is for test only!
 	Name: Package Manager Unlimited (PMU)
 	Files: server.py, shell.py, rat.py
   
-	Installation: Put the client.py in start-up as Root.
+	Installation: Put the rat.py in start-up as Root.
   
 	Theory Craft:
 	Client creates a key to connect with a remote server that sends command and data to controll the client.
@@ -64,4 +64,4 @@ This version is for test only!
 	
 	Startup >> Connect >> Send Key >> Authenticate >> Allow or deny socket
 	
-	Put the client.py in start-up as Root
+	Put the rat.py in start-up as Root
