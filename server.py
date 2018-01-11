@@ -32,14 +32,6 @@ def main_controller():
                 if sock == server_socket:
                     sockfd, addr = server_socket.accept()
                     socket_list.append(sockfd)
-
-                    #Send broadcast to let clients know a new client connected
-                    #broadcast(server_socket, sock, "\r" + "[%s:%s] Connected" % addr)
-
-                    # Check whitelist for allowed connections
-                        # Deny access
-                        # socket_list.remove(sock)
-                        #print("[ BLOCKED ] %s:%s Not on whitelist!" % addr)
                 else:
                     try:
                         data = sock.recv(4096)
