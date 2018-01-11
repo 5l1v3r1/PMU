@@ -1,6 +1,6 @@
 ![alt text](http://leonvoerman.nl/coding/rat.png)
 
-# PMU
+# PMU (Pre-Alpha)
 **P**ackage **M**anager **U**nlimited is a RAT for Linux coded with Python
 
 ---
@@ -8,7 +8,7 @@
 # Remote Package Manager for Linux (Python)
 
 	Name: Package Manager Unlimited (PMU)
-	Files: server.py, CommandShellConnect.py, client.py
+	Files: server.py, shell.py, rat.py
   
 	Installation: Put the client.py in start-up as Root.
   
