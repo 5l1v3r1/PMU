@@ -14,7 +14,7 @@ Package Manager Unlimited is a RAT for Linux
 	Client creates a key to connect with a remote server that sends command and data to controll the client.
   This is a reverse connection.
 	
-**Remote server:**
+# Remote server 
 
 **Output:**
 
@@ -27,7 +27,7 @@ Package Manager Unlimited is a RAT for Linux
 								
 
 
-**Commands:**
+# Commands
 
 | Command        | Execution     |
 | ------------- |:-------------|
