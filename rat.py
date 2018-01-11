@@ -7,11 +7,11 @@ import sys, os, socket, select, time, datetime, getpass
 #    print("Usage: python connector.py <host> <port>")
 #    sys.exit(0)
 
-host = ''
-port = 3435
+#host = ''
+#port = 3435
 
-#host = raw_input('IP \> ')
-#port = input('Port \> ')
+host = raw_input('IP \> ')
+port = input('Port \> ')
 _key = raw_input('Key \> ')
 
 def connector():
