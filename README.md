@@ -48,7 +48,7 @@ Package Manager Unlimited is a RAT for Linux
 | /shutdown  | Shutdown remote server|
 
 
-#Client installation:
+# Client installation:
 	Server IP \> 10.0.0.1
 	
 	Authentication Key \> PTOV2
