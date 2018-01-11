@@ -8,11 +8,11 @@ Package Manager Unlimited is a RAT for Linux
 	Name: Package Manager Unlimited (PMU)
 	Files: server.py, CommandShellConnect.py, client.py
   
-  Installation: Put the client.py in start-up as Root.
+	Installation: Put the client.py in start-up as Root.**
   
-	Theory Craft:
+**Theory Craft:**
 	Client creates a key to connect with a remote server that sends command and data to controll the client.
-  This is a reverse connection.
+  	This is a reverse connection.
 	
 # Remote server 
 
