@@ -1,0 +1,3 @@
+#!/usr/bin/python
+# This file does magic...
+print('magic')
