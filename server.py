@@ -46,7 +46,8 @@ class AESCipher:
         return unpad(cipher.decrypt( enc[16:]))
 
 # AES secret
-cipher = AESCipher('LK0315B4NNKOX1JMR2P0NL188KXJXFUT') # 32 character password
+cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f\xce*m]5\xde\xcd\xf2\xa6') # Key
+
 
 # SSL Encryption
 #*Do magic*
