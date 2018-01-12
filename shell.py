@@ -28,6 +28,21 @@ Help:
 def gen_string(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
+# AES Encryption
+class AESCipher:
+    def __init__(self, key ):
+        self.key = key
+
+    def encrypt(self, raw ):
+        raw = pad(raw)
+        iv = Random.new().read( AES.block_size )
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return base64.b64encode(iv + cipher.encrypt(raw))
+
+# AES secret
+cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f\xce*m]5\xde\xcd\xf2\xa6') # Key
+
+
 def client():
     #if(len(sys.argv) < 3) :
     #    print 'Usage : python chat-client.py <server> <port>'
@@ -58,14 +73,13 @@ def client():
 
             for sock in read_sockets:
                 if sock == s:
-                    # incoming message from remote server, s
-                    data = sock.recv(4096)
+                    data = sock.recv(2048)
                     if not data:
                         print '\nDisconnected from server'
                         sys.exit(1)
                     else:
                         # print data
-                        sys.stdout.write(data)
+                        print('%s' % data)
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                 else:
                     # user entered a message

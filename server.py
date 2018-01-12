@@ -25,7 +25,7 @@ _userslog = './users.csv'
 
 socket_list = []
 
-BS = 128
+BS = 256
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
 unpad = lambda s : s[0:-ord(s[-1])]
 
@@ -81,14 +81,16 @@ def main_controller():
                         #print("[ BLOCKED ] %s:%s Not on whitelist!" % addr)
                 else:
                     try:
-                        data = sock.recv(4096)
+                        data = sock.recv(2048)
                         if data:
                             if not 'USER' in data:
                                 broadcast(server_socket, sock, ' ' + data)
                                 print("[ " + str(sock.getpeername()[0]) + " ] " + data)
+
                                 with open(_logfile, 'a+') as f:
                                     f.write("[ " + str(sock.getpeername()[0]) + " ] " + data + '\n')
                                     f.close()
+
                             if '$' in data:
                                 print(data.split('$')[1])
                                 if data.split('$')[0] == 'USER':
@@ -100,6 +102,13 @@ def main_controller():
                                     with open(_userslog, 'a+') as f:
                                         f.write('[Online],' + _key + ',' + socket.gethostbyaddr(addr[0])[0] + ',' + _user + ',' + addr[0] + ',' + 'PACKAGE STATUS\n')
                                         f.close()
+                                elif data.split('$')[1] == 'online':
+                                    for l in open(_userslog, 'r').readlines():
+                                        #print(l)
+                                        if l.startswith('[Online]'):
+                                            _online = l.rstrip() + '\n'                                            
+                                            broadcast(server_socket, sock, _online)
+
 
                         else:
                             # If there is no data, remove it from the list
