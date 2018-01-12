@@ -75,4 +75,6 @@ This version is for test only!
 	Connect with the server and send COMMAND$<command> to the remote server.
 	This will trigger the command on all remote clients, forming a botnet. Amazing, but no.
 	
+	This RAT only works on the local network.
+	
 	In the future, pentest.py will be supplied. Stay tuned.
