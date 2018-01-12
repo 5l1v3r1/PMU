@@ -128,29 +128,32 @@ def client():
                         #s.send('COMMAND$' + msg)
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/shutdown '):
-                        s.send(cipher.encrypt('COMMAND$poweroff')
+                        s.send(cipher.encrypt('COMMAND$poweroff'))
                         #s.send('COMMAND$poweroff')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/shutdown all'):
-                        s.send(cipher.encrypt('COMMAND$poweroff')
+                        s.send(cipher.encrypt('COMMAND$poweroff'))
                         #s.send('COMMAND$poweroff')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/reboot '):
                         print('\nComming Soon...\n')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/reboot all'):
-                        s.send(cipher.encrypt('COMMAND$reboot')
+                        s.send(cipher.encrypt('COMMAND$reboot'))
                         #s.send('COMMAND$reboot')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/show'):
                         if 'online' in msg.split(' ')[1]:
                             s.send('SHOW$online')
+                            s.send(cipher.encrypt('SHOW$online'))
                             sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                         elif 'offline' in msg.split(' ')[1]:
-                            s.send('SHOW$offline')
+                            #s.send('SHOW$offline')
+                            s.send(cipher.encrypt('SHOW$offline'))
                             sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                         elif 'list' in msg.split(' ')[1]:
                             s.send('SHOW$list')
+                            s.send(cipher.encrypt('SHOW$list'))
                             sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                         else:
                             sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
