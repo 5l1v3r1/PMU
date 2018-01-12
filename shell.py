@@ -2,7 +2,9 @@
 # Connects with the server and send commands.
 # This will be the command shell
 
-import sys, socket, select, os, string, random
+import sys, socket, select, os, string, random, base64
+from Crypto import Random
+from Crypto.Cipher import AES
 
 halp = '''
 Help:
@@ -28,6 +30,10 @@ Help:
 def gen_string(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
+BS = 256
+pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+unpad = lambda s : s[0:-ord(s[-1])]
+
 # AES Encryption
 class AESCipher:
     def __init__(self, key ):
@@ -41,7 +47,6 @@ class AESCipher:
 
 # AES secret
 cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f\xce*m]5\xde\xcd\xf2\xa6') # Key
-
 
 def client():
     #if(len(sys.argv) < 3) :
@@ -118,20 +123,24 @@ def client():
                         print('\nComming Soon...\n')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/c'):
-                        msg = msg.replace('/c ', '')
-                        s.send('COMMAND$' + msg.rstrip())
+                        msg = msg.replace('/c ', '').rstrip()
+                        s.send(cipher.encrypt('COMMAND$' + msg))
+                        #s.send('COMMAND$' + msg)
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/shutdown '):
-                        s.send('COMMAND$poweroff')
+                        s.send(cipher.encrypt('COMMAND$poweroff')
+                        #s.send('COMMAND$poweroff')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/shutdown all'):
-                        s.send('COMMAND$poweroff')
+                        s.send(cipher.encrypt('COMMAND$poweroff')
+                        #s.send('COMMAND$poweroff')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/reboot '):
                         print('\nComming Soon...\n')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/reboot all'):
-                        s.send('COMMAND$reboot')
+                        s.send(cipher.encrypt('COMMAND$reboot')
+                        #s.send('COMMAND$reboot')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/show'):
                         if 'online' in msg.split(' ')[1]:

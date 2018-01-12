@@ -32,6 +32,12 @@ class AESCipher:
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return base64.b64encode(iv + cipher.encrypt(raw))
 
+    def decrypt(self, enc ):
+        enc = base64.b64decode(enc)
+        iv = enc[:16]
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return unpad(cipher.decrypt( enc[16:]))
+
 # AES secret
 cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f\xce*m]5\xde\xcd\xf2\xa6') # Key
 
@@ -62,6 +68,7 @@ def connector():
             for sock in read_sockets:
                 if sock == server:
                     data = sock.recv(2048)
+                    data = cipher.decrypt(data)
                 if not data:
                     print("\033[1;91m[!]\033[0m Connection has ended")
                     sys.exit(1)
