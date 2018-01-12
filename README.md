@@ -70,7 +70,8 @@ This version is for test only!
 	Everything is now being sent in plain text over the network.
 	Future versions will have AES + SSL encryption and authentication.
 	
-	Sofar, 'rm' commands are blocked by the RAT.
+	>> Sofar, 'rm' commands are blocked by the RAT.
+	>> Key is sent encrypted
 	
 ## Pentest
 	Connect with the server and send COMMAND$<command> to the remote server.
