@@ -111,7 +111,8 @@ def client():
                     elif msg.startswith('/update '):
                         msg = msg.rstrip()
                         if 'all' in msg.split(' ')[1]:
-                            s.send('COMMAND$apt-get update && apt-get upgrade -y')
+                            #s.send('COMMAND$apt-get update && apt-get upgrade -y')
+                            s.send(cipher.encrypt('COMMAND$apt-get update && apt-get upgrade -y'))
                             sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                         else:
                             s.send('UPGRADE$' + msg.split(' ')[1])
