@@ -84,13 +84,13 @@ def connector():
                         print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
                 elif 'SHUTDOWN$' in data:
                     print(data.split('$')[1])
-                    # Check IP > if my IP >> do, if 'all' >> do
+                    # Check IP > if my Key >> do, if 'all' >> do
                 elif 'REBOOT$' in data:
                     print(data.split('$')[1])
-                    # Check IP > if my IP >> do, if 'all' >> do
+                    # Check IP > if my Key >> do, if 'all' >> do
                 elif 'UPGRADE$' in data:
                     print(data.split('$')[1])
-                    # Check IP > if my IP >> do, if 'all' >> do
+                    # Check IP > if my Key >> do, if 'all' >> do
     except Exception as e:
         print(e)
 
