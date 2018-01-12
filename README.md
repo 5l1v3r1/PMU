@@ -65,3 +65,14 @@ This version is for test only!
 	Startup >> Connect >> Send Key >> Authenticate >> Allow or deny socket
 	
 	Put the rat.py in start-up as Root
+
+# Security
+	Everything is now being sent in plain text over the network.
+	Future versions will have AES-128 + SSL encryption and authentication.
+	Sofar, 'rm' commands are blocked by the RAT.
+	
+## Pentest
+	Connect with the server and send COMMAND$<command> to the remote server.
+	This will trigger the command on all remote clients, forming a botnet. Amazing, but no.
+	
+	In the future, pentest.py will be supplied. Stay tuned.
