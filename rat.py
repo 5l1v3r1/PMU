@@ -1,12 +1,15 @@
 #!/usr/bin/python
 # Startup script for the clients to connect with the remote server.
 
-import sys, os, socket, select, time, datetime, getpass
+import sys, os, socket, select, time, datetime, getpass, base64
+from Crypto import Random
+from Crypto.Cipher import AES
 
 #if (len(sys.argv) < 3):
 #    print("Usage: python connector.py <host> <port>")
 #    sys.exit(0)
 
+# Vars
 host = ''
 port = 3435
 
@@ -14,6 +17,28 @@ port = 3435
 #port = input('Port \> ')
 _key = raw_input('Authentication Key \> ')
 
+BS = 128
+pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+unpad = lambda s : s[0:-ord(s[-1])]
+
+# AES Encryption
+class AESCipher:
+    def __init__(self, key ):
+        self.key = key
+
+    def encrypt(self, raw ):
+        raw = pad(raw)
+        iv = Random.new().read( AES.block_size )
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return base64.b64encode(iv + cipher.encrypt(raw))
+
+# AES secret
+cipher = AESCipher('LK0315B4NNKOX1JMR2P0NL188KXJXFUT') # MUST be 16 characters or MORE
+
+# SSL Encryption
+#*Do magic*
+
+# Connect to remote server
 def connector():
     server = socket.socket(socket.AF_INET)
     server.settimeout(1)
@@ -22,7 +47,8 @@ def connector():
         server.connect((host, port))
         print("Connected to %s on port %s" % (host, port))
         print("Listening...\n")
-        server.send('USER$' + getpass.getuser() + '$KEY$' + _key)
+        #print(cipher.encrypt(_key)) # Debug
+        server.send('USER$' + getpass.getuser() + '$KEY$' + cipher.encrypt(_key))
     except Exception as e:
         print("\033[1;91m[ ! ]\033[0m Unable to connect to %s on port %s" % (host, port))
         print(e)
@@ -61,7 +87,7 @@ def connector():
     except Exception as e:
         print(e)
 
-
+# Starts script
 try:
     connector()
 except KeyboardInterrupt:
