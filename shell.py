@@ -29,10 +29,12 @@ def gen_string(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 def client():
+    #if(len(sys.argv) < 3) :
+    #    print 'Usage : python chat-client.py <server> <port>'
+    #    sys.exit(0)
+
     host = ''
     port = 3435
-    #host = sys.argv[1]
-    #port = int(sys.argv[2])
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(2)
@@ -118,8 +120,17 @@ def client():
                         s.send('COMMAND$reboot')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/show'):
-                        print('\nComming Soon...\n')
-                        sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        if 'online' in msg.split(' ')[1]:
+                            s.send('SHOW$online')
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        elif 'offline' in msg.split(' ')[1]:
+                            s.send('SHOW$offline')
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        elif 'list' in msg.split(' ')[1]:
+                            s.send('SHOW$list')
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        else:
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     else:
                         if msg.startswith('/'):
                             s.send(msg)

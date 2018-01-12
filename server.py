@@ -5,11 +5,18 @@
 # Print format:
 #   On/Offline     Key          Hostname         User              IP      Package Status
 #   If data       KEY$       gethostbyname()  getpass.getuser()    addr          ??
-
 import sys, socket, select, os
+
+#if (len(sys.argv) < 2):
+#    print("Usage: python main_controller.py <port>")
+#    sys.exit(0)
 
 host = ''
 port = 3435
+
+_logfile = './logfile.log'
+_userslog = './users.csv'
+
 #port = int(sys.argv[1])
 
 socket_list = []
@@ -32,6 +39,14 @@ def main_controller():
                 if sock == server_socket:
                     sockfd, addr = server_socket.accept()
                     socket_list.append(sockfd)
+
+                    #Send broadcast to let clients know a new client connected
+                    #broadcast(server_socket, sock, "\r" + "[%s:%s] Connected" % addr)
+
+                    # Check whitelist for allowed connections
+                        # Deny access
+                        # socket_list.remove(sock)
+                        #print("[ BLOCKED ] %s:%s Not on whitelist!" % addr)
                 else:
                     try:
                         data = sock.recv(4096)
@@ -39,13 +54,20 @@ def main_controller():
                             if not 'USER' in data:
                                 broadcast(server_socket, sock, ' ' + data)
                                 print("[ " + str(sock.getpeername()[0]) + " ] " + data)
-
+                                with open(_logfile, 'a+') as f:
+                                    f.write("[ " + str(sock.getpeername()[0]) + " ] " + data + '\n')
+                                    f.close()
                             if '$' in data:
                                 print(data.split('$')[1])
                                 if data.split('$')[0] == 'USER':
                                     _user = data.split('$')[1]
                                     _key = data.split('$')[3]
                                     print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + 'PACKAGE STATUS'.rjust(20))
+
+                                    with open(_userslog, 'a+') as f:
+                                        f.write('[Online],' + _key + ',' + socket.gethostbyaddr(addr[0])[0] + ',' + _user + ',' + addr[0] + ',' + 'PACKAGE STATUS\n')
+                                        f.close()
+
                         else:
                             # If there is no data, remove it from the list
                             if sock in socket_list:

