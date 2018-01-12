@@ -1,11 +1,7 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 import sys, os, random, string, hashlib
 
-if (len(sys.argv) < 2):
-    print('[!] Usage: python gen_passwd.py <passwd length>')
-    sys.exit()
-
-length = int(sys.argv[1])
+length = 32
 
 def gen_string(size=length, chars=string.ascii_uppercase + string.digits):
       return ''.join(random.choice(chars) for _ in range(size))
