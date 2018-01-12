@@ -67,11 +67,10 @@ This version is for test only!
 	Put the rat.py in start-up as Root
 
 # Security
-	Everything is now being sent in plain text over the network.
-	Future versions will have AES + SSL encryption and authentication.
+	Future versions will have authentication.
 	
 	>> Sofar, 'rm' commands are blocked by the RAT.
-	>> Key sent encrypted
+	>> Commands are encrypted
 	
 ## Pentest
 	Connect with the server and send COMMAND$<command> to the remote server.
