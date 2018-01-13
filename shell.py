@@ -102,7 +102,9 @@ def client():
                         os.system('clear')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/genkey'):
-                        print('New key added: ' + gen_string())
+                        _new_key = gen_string()
+                        print('New key added: ' + _new_key)
+                        s.send(cipher.encrypt('KEY$' + _new_key))
                         #print('\nComming Soon...\n')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/del'):

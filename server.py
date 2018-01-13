@@ -81,6 +81,14 @@ def main_controller():
                 else:
                     try:
                         data = sock.recv(2048)
+
+                        # Try to decrypt the data, else, show plain data
+                        try:
+                            data = cipher.decrypt(data)
+                        except Exception as e:
+                            print('Plain data:')
+                            print(data)
+
                         if data:
                             if not 'USER' in data:
                                 broadcast(server_socket, sock, ' ' + data)
@@ -107,6 +115,9 @@ def main_controller():
                                         if l.startswith('[Online]'):
                                             _online = l.rstrip() + '\n'
                                             broadcast(server_socket, sock, _online)
+                                elif data.split('$')[0] == 'KEY':
+                                    with open('keys-available.keys', 'a+') as f:
+                                        f.write(data.split('$')[1] + '\n'); f.close()
 
 
                         else:
