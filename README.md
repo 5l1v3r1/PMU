@@ -42,8 +42,9 @@
 | /connect 10.0.0.223  | Connect to client (reverse shell >> drop /bin/bash)|
 | /c <command>  | send and execute custom command on remote client|
 | /shutdown all  | Shutdown all remote clients|
+| /shutdown <key>  | Shutdown all remote clients|
 | /reboot all | Reboot all remote client|
-| /reboot exmaple  | Reboot remote client|
+| /reboot <key>  | Reboot remote client|
 | /show list  | Show all clients|
 | /show offline | Show offline only|
 | /show online  | show online only|
