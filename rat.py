@@ -68,13 +68,20 @@ def connector():
             for sock in read_sockets:
                 if sock == server:
                     data = sock.recv(2048)
-                    data = cipher.decrypt(data)
+
+                    # Try to decrypt data
+                    try:
+                        data = cipher.decrypt(data)
+                    except Exception as e:
+                        print(e)
+                        print('[ERROR] Failed to execute command %s' % data)
+
                 if not data:
                     print("\033[1;91m[!]\033[0m Connection has ended")
                     sys.exit(1)
                 else:
-                    #print("\033[1;94m[ INFO ]\033[0m %s" % data)
-                    print(data)
+                    print(data) # Debug
+
                 # Do something when some data is present
                 if 'COMMAND$' in data:
                     # Run command
@@ -83,14 +90,20 @@ def connector():
                     else:
                         print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
                 elif 'SHUTDOWN$' in data:
-                    print(data.split('$')[1])
-                    # Check IP > if my Key >> do, if 'all' >> do
+                    if data.split('$')[1] == _key:
+                        os.system('poweroff')
+                    # Check IP > if my IP >> do, if 'all' >> do
                 elif 'REBOOT$' in data:
-                    print(data.split('$')[1])
-                    # Check IP > if my Key >> do, if 'all' >> do
+                    if data.split('$')[1] == _key:
+                        os.system('reboot')
+                    # Check IP > if my IP >> do, if 'all' >> do
                 elif 'UPGRADE$' in data:
-                    print(data.split('$')[1])
-                    # Check IP > if my Key >> do, if 'all' >> do
+                    if data.split('$')[1] == _key and getpass.getuser() == 'root':
+                        try:
+                            os.system('apt-get update && apt-get upgrade -y')
+                        except Exception as e:
+                            print('[ERROR] Failed to update')
+                    # Check IP > if my IP >> do, if 'all' >> do
     except Exception as e:
         print(e)
 

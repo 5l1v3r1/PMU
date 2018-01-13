@@ -13,13 +13,13 @@ Help:
     clear\t\t\t| Clear terminal screen
     /genkey\t\t\t| Generate token to connect
     /del <key>\t\t\t| Delete key for host
-    /update <IP>\t\t| Update remote client
+    /update <key>\t\t| Update remote client
     /update all\t\t\t| Update all remote clients
-    /connect <IP>\t\t| Reverse shell on remote client
+    /connect <key>\t\t| Reverse shell on remote client
     /c <command>\t\t| Send command to all clients
-    /shutdown <IP>\t\t| Shutdown remote client
+    /shutdown <key>\t\t| Shutdown remote client
     /shutdown all\t\t| Shutdown all remote clients
-    /reboot <IP>\t\t| Reboot remote client
+    /reboot <key>\t\t| Reboot remote client
     /reboot all\t\t\t| Reboot all remote clients
     /show list\t\t\t| Show all clients
     /show online\t\t| Show all Online clients
@@ -115,7 +115,7 @@ def client():
                             s.send(cipher.encrypt('COMMAND$apt-get update && apt-get upgrade -y'))
                             sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                         else:
-                            s.send('UPGRADE$' + msg.split(' ')[1])
+                            s.send(cipher.encrypt('UPGRADE$' + msg.split(' ')[1]))
                             sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/save'):
                         print('\nComming Soon...\n')
@@ -132,20 +132,30 @@ def client():
                         s.send(cipher.encrypt('COMMAND$poweroff'))
                         #s.send('COMMAND$poweroff')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
-                    elif msg.startswith('/shutdown all'):
-                        s.send(cipher.encrypt('COMMAND$poweroff'))
+                    elif msg.startswith('/shutdown '):
+                        if 'all' in msg.split(' ')[1]:
+                            #s.send('COMMAND$apt-get update && apt-get upgrade -y')
+                            s.send(cipher.encrypt('COMMAND$poweroff'))
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        else:
+                            s.send(cipher.encrypt('SHUTDOWN$' + msg.split(' ')[1]))
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                         #s.send('COMMAND$poweroff')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/reboot '):
-                        print('\nComming Soon...\n')
+                        if 'all' in msg.split(' ')[1]:
+                            #s.send('COMMAND$apt-get update && apt-get upgrade -y')
+                            s.send(cipher.encrypt('COMMAND$reboot'))
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        else:
+                            s.send(cipher.encrypt('REBOOT$' + msg.split(' ')[1]))
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
-                    elif msg.startswith('/reboot all'):
-                        s.send(cipher.encrypt('COMMAND$reboot'))
                         #s.send('COMMAND$reboot')
                         sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                     elif msg.startswith('/show'):
                         if 'online' in msg.split(' ')[1]:
-                            s.send('SHOW$online')
+                            #s.send('SHOW$online')
                             s.send(cipher.encrypt('SHOW$online'))
                             sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
                         elif 'offline' in msg.split(' ')[1]:

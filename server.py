@@ -36,7 +36,7 @@ class AESCipher:
     def encrypt(self, raw ):
         raw = pad(raw)
         iv = Random.new().read(AES.block_size)
-        cipher = AES.new(self.key, AES.MODE_CBC, iv )
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return base64.b64encode(iv + cipher.encrypt(raw))
 
     def decrypt(self, enc ):
@@ -47,7 +47,6 @@ class AESCipher:
 
 # AES secret
 cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f\xce*m]5\xde\xcd\xf2\xa6') # Key
-
 
 # SSL Encryption
 #*Do magic*
@@ -106,7 +105,7 @@ def main_controller():
                                     for l in open(_userslog, 'r').readlines():
                                         #print(l)
                                         if l.startswith('[Online]'):
-                                            _online = l.rstrip() + '\n'                                            
+                                            _online = l.rstrip() + '\n'
                                             broadcast(server_socket, sock, _online)
 
 
