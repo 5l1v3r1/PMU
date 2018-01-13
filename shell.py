@@ -80,7 +80,7 @@ def client():
                 if sock == s:
                     data = sock.recv(2048)
                     if not data:
-                        print '\nDisconnected from server'
+                        print('\nDisconnected from server')
                         sys.exit(1)
                     else:
                         # print data

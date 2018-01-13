@@ -76,7 +76,7 @@ def main_controller():
 
                     # Check whitelist for allowed connections
                         # Deny access
-                        # socket_list.remove(sock)
+                        #socket_list.remove(sock)
                         #print("[ BLOCKED ] %s:%s Not on whitelist!" % addr)
                 else:
                     try:
@@ -88,10 +88,11 @@ def main_controller():
                         except Exception as e:
                             print('Plain data:')
                             print(data)
+                            print('----------------------------')
 
                         if data:
                             if not 'USER' in data:
-                                broadcast(server_socket, sock, ' ' + data)
+                                broadcast(server_socket, sock, ' ' + cipher.encrypt(data))
                                 print("[ " + str(sock.getpeername()[0]) + " ] " + data)
 
                                 with open(_logfile, 'a+') as f:
@@ -103,7 +104,6 @@ def main_controller():
                                 if data.split('$')[0] == 'USER':
                                     _user = data.split('$')[1] # Grab user
                                     _key = data.split('$')[3] # Grab Key
-                                    _key = cipher.decrypt(_key) # Decrypt Key
                                     print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + 'PACKAGE STATUS'.rjust(20))
 
                                     with open(_userslog, 'a+') as f:
@@ -118,8 +118,6 @@ def main_controller():
                                 elif data.split('$')[0] == 'KEY':
                                     with open('keys-available.keys', 'a+') as f:
                                         f.write(data.split('$')[1] + '\n'); f.close()
-
-
                         else:
                             # If there is no data, remove it from the list
                             if sock in socket_list:
