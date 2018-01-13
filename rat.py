@@ -75,7 +75,7 @@ def connector():
                     except Exception as e:
                         print(data)
                         print(e)
-                        print('\033[1;91m[ERROR][0m Failed to execute command %s' % data)
+                        print('\033[1;91m[ERROR]\033[0m Failed to execute command %s' % data)
 
                 if not data:
                     print("\033[1;91m[!]\033[0m Connection has ended")

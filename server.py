@@ -114,7 +114,7 @@ def main_controller():
                                         #print(l)
                                         if l.startswith('[Online]'):
                                             _online = l.rstrip() + '\n'
-                                            broadcast(server_socket, sock, _online)
+                                            broadcast(server_socket, sock, cipher.encrypt(_online))
                                 elif data.split('$')[0] == 'KEY':
                                     with open('keys-available.keys', 'a+') as f:
                                         f.write(data.split('$')[1] + '\n'); f.close()
@@ -128,7 +128,7 @@ def main_controller():
                             #print("[-] %s:%s Disconnected" % addr)
 
                     except Exception as e:
-                        broadcast(server_socket, sock, "Connection with [%s:%s] interrupted" % addr)
+                        broadcast(server_socket, sock, cipher.encrypt("Connection with [%s:%s] interrupted" % addr))
                         continue
     except Exception as e:
         print(e)
