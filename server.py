@@ -104,17 +104,41 @@ def main_controller():
                                 if data.split('$')[0] == 'USER':
                                     _user = data.split('$')[1] # Grab user
                                     _key = data.split('$')[3] # Grab Key
-                                    print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + 'PACKAGE STATUS'.rjust(20))
+
+                                    # Read Available keys
+                                    try:
+                                        _keylist = open('keys-available.keys').read()
+                                        #print(_keylist) # Debug
+                                    except Exception as e:
+                                        _keylist = ''
+
+                                    if _key in _keylist:
+                                        #with open('keys-inuse.csv', 'a+') as f:
+                                        #    f.write(_key + ',' + addr[0] + '\n'); f.close()
+
+                                        #_keylist = _keylist.replace(_key, '')
+                                        print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + 'PACKAGE STATUS'.rjust(20))
+
+                                        # Remove key from list
+                                        #with open('keys-available.keys', 'w') as f:
+                                        #    f.writelines(_keylist); f.close()
+
+                                    else:
+                                        # Invalid key, remove client socket
+                                        print('\033[1;91m[ERROR]\033[0m Invalid key entrered from %s (kicked from the server)' % addr[0])
+                                        if sock in socket_list:
+                                            socket_list.remove(sock)
 
                                     with open(_userslog, 'a+') as f:
                                         f.write('[Online],' + _key + ',' + socket.gethostbyaddr(addr[0])[0] + ',' + _user + ',' + addr[0] + ',' + 'PACKAGE STATUS\n')
                                         f.close()
+
                                 elif data.split('$')[1] == 'online':
                                     for l in open(_userslog, 'r').readlines():
-                                        #print(l)
                                         if l.startswith('[Online]'):
                                             _online = l.rstrip() + '\n'
                                             broadcast(server_socket, sock, cipher.encrypt(_online))
+
                                 elif data.split('$')[0] == 'KEY':
                                     with open('keys-available.keys', 'a+') as f:
                                         f.write(data.split('$')[1] + '\n'); f.close()

@@ -73,7 +73,7 @@ def connector():
                     try:
                         data = cipher.decrypt(data)
                     except Exception as e:
-                        print(data)
+                        print(data) # Debug
                         print(e)
                         print('\033[1;91m[ERROR]\033[0m Failed to execute command %s' % data)
 
@@ -90,21 +90,20 @@ def connector():
                         os.system(data.split('$')[1])
                     else:
                         print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
+
                 elif 'SHUTDOWN$' in data:
                     if data.split('$')[1] == _key:
                         os.system('poweroff')
-                    # Check IP > if my IP >> do, if 'all' >> do
+                    # Check Key > if my Key >> do, if 'all' >> do
                 elif 'REBOOT$' in data:
                     if data.split('$')[1] == _key:
                         os.system('reboot')
-                    # Check IP > if my IP >> do, if 'all' >> do
                 elif 'UPGRADE$' in data:
                     if data.split('$')[1] == _key and getpass.getuser() == 'root':
                         try:
                             os.system('apt-get update && apt-get upgrade -y')
                         except Exception as e:
                             print('[ERROR] Failed to update')
-                    # Check IP > if my IP >> do, if 'all' >> do
     except Exception as e:
         print(e)
 

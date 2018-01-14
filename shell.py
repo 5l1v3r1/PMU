@@ -49,9 +49,6 @@ class AESCipher:
 cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f\xce*m]5\xde\xcd\xf2\xa6') # Key
 
 def client():
-    #if(len(sys.argv) < 3) :
-    #    print 'Usage : python chat-client.py <server> <port>'
-    #    sys.exit(0)
 
     host = ''
     port = 3435
@@ -66,7 +63,7 @@ def client():
         print '[ ERROR ] Unable to connect'
         sys.exit(1)
     os.system('clear')
-    print '\n\t\t[ WELCOME ] Connected with ' + str(host) + ':' + str(port) + '\n\n'
+    print('\n\t\t[ WELCOME ] Connected with ' + str(host) + ':' + str(port) + '\n\n')
     sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
 
     try:
