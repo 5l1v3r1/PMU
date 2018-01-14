@@ -107,22 +107,21 @@ def main_controller():
 
                                     # Read Available keys
                                     try:
-                                        _keylist = open('keys-available.keys').read()
+                                        _keylist = open('keys-available.csv').read()
                                         #print(_keylist) # Debug
                                     except Exception as e:
                                         _keylist = ''
 
                                     if _key in _keylist:
-                                        #with open('keys-inuse.csv', 'a+') as f:
-                                        #    f.write(_key + ',' + addr[0] + '\n'); f.close()
 
-                                        #_keylist = _keylist.replace(_key, '')
+                                        _keylist = _keylist.replace(_key, '%s,%s,%s' % (_key, addr[0], addr[1]))
+                                        print(_keylist)
                                         print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + 'PACKAGE STATUS'.rjust(20))
 
-                                        # Remove key from list
-                                        #with open('keys-available.keys', 'w') as f:
-                                        #    f.writelines(_keylist); f.close()
-
+                                        # Replace line in keylist
+                                        with open('keys-available.csv', 'w') as f:
+                                            f.writelines(_keylist); f.close()
+                                            
                                     else:
                                         # Invalid key, remove client socket
                                         print('\033[1;91m[ERROR]\033[0m Invalid key entrered from %s (kicked from the server)' % addr[0])
@@ -140,7 +139,7 @@ def main_controller():
                                             broadcast(server_socket, sock, cipher.encrypt(_online))
 
                                 elif data.split('$')[0] == 'KEY':
-                                    with open('keys-available.keys', 'a+') as f:
+                                    with open('keys-available.csv', 'a+') as f:
                                         f.write(data.split('$')[1] + '\n'); f.close()
                         else:
                             # If there is no data, remove it from the list
