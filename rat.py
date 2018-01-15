@@ -55,9 +55,11 @@ def connector():
         print("Listening...\n")
 
         # Get package status
-        p = subprocess.Popen("sudo apt-get -u upgrade --assume-no | sed -n 5p", stdout=subprocess.PIPE, shell=True)
+        p = subprocess.Popen("sudo apt-get -u upgrade --assume-no | grep upgraded,", stdout=subprocess.PIPE, shell=True)
         (output, err) = p.communicate()
         p_status = p.wait()
+
+        #print(output.split('upgrade')[0]) # Debug
 
         server.send(cipher.encrypt('USER$' + getpass.getuser() + '$KEY$' + _key + '$STATUS$' + output.split('upgrade')[0]))
 
