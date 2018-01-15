@@ -107,7 +107,7 @@ def main_controller():
                                     _key = data.split('$')[3] # Grab Key
                                     _upgrades = data.split('$')[5] + 'Upgrades' # Grab upgrades
 
-                                    print('%s' % _upgrades)
+                                    #print('%s' % _upgrades) # Debug
 
                                     # Read Available keys
                                     try:

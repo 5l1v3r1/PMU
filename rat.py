@@ -53,17 +53,11 @@ def connector():
         server.connect((host, port))
         print("Connected to %s on port %s" % (host, port))
         print("Listening...\n")
-        #print(cipher.encrypt(_key)) # Debug
-
-        #_status = commands.getstatusoutput('sudo apt-get -u upgrade --assume-no | sed -n 5p')
-        #print(_status)
 
         # Get package status
         p = subprocess.Popen("sudo apt-get -u upgrade --assume-no | sed -n 5p", stdout=subprocess.PIPE, shell=True)
         (output, err) = p.communicate()
         p_status = p.wait()
-        #print("%supgrades" % output.split('upgrade')[0]) # Debug
-
 
         server.send(cipher.encrypt('USER$' + getpass.getuser() + '$KEY$' + _key + '$STATUS$' + output.split('upgrade')[0]))
 
