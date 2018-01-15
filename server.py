@@ -100,10 +100,14 @@ def main_controller():
                                     f.close()
 
                             if '$' in data:
-                                print(data.split('$')[1])
+                                #print(data.split('$')[1]) # Debug
+
                                 if data.split('$')[0] == 'USER':
                                     _user = data.split('$')[1] # Grab user
                                     _key = data.split('$')[3] # Grab Key
+                                    _upgrades = data.split('$')[5] + 'Upgrades' # Grab upgrades
+
+                                    print('%s' % _upgrades)
 
                                     # Read Available keys
                                     try:
@@ -116,12 +120,12 @@ def main_controller():
 
                                         _keylist = _keylist.replace(_key, '%s,%s,%s' % (_key, addr[0], addr[1]))
                                         print(_keylist)
-                                        print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + 'PACKAGE STATUS'.rjust(20))
+                                        print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + _upgrades.rjust(20))
 
                                         # Replace line in keylist
                                         with open('keys-available.csv', 'w') as f:
                                             f.writelines(_keylist); f.close()
-                                            
+
                                     else:
                                         # Invalid key, remove client socket
                                         print('\033[1;91m[ERROR]\033[0m Invalid key entrered from %s (kicked from the server)' % addr[0])

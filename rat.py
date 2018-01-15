@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Startup script for the clients to connect with the remote server.
 
-import sys, os, socket, select, time, datetime, getpass, base64
+import sys, os, socket, select, time, datetime, getpass, base64, subprocess
 from Crypto import Random
 from Crypto.Cipher import AES
 
@@ -54,7 +54,19 @@ def connector():
         print("Connected to %s on port %s" % (host, port))
         print("Listening...\n")
         #print(cipher.encrypt(_key)) # Debug
-        server.send(cipher.encrypt('USER$' + getpass.getuser() + '$KEY$' + _key))
+
+        #_status = commands.getstatusoutput('sudo apt-get -u upgrade --assume-no | sed -n 5p')
+        #print(_status)
+
+        # Get package status
+        p = subprocess.Popen("sudo apt-get -u upgrade --assume-no | sed -n 5p", stdout=subprocess.PIPE, shell=True)
+        (output, err) = p.communicate()
+        p_status = p.wait()
+        #print("%supgrades" % output.split('upgrade')[0]) # Debug
+
+
+        server.send(cipher.encrypt('USER$' + getpass.getuser() + '$KEY$' + _key + '$STATUS$' + output.split('upgrade')[0]))
+
     except Exception as e:
         print("\033[1;91m[ ! ]\033[0m Unable to connect to %s on port %s" % (host, port))
         print(e)
