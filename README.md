@@ -1,4 +1,4 @@
-![alt text](http://leonvoerman.nl/coding/rat.png)
+![alt text](http://leonvoerman.nl/coding/pmu.png)
 
 # PMU (Alpha preview)
 **P**ackage **M**anager **U**nlimited is a RAT for Linux coded with Python.
