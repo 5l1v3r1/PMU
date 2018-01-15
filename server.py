@@ -107,8 +107,11 @@ def main_controller():
                                     _key = data.split('$')[3] # Grab Key
                                     _upgrades = data.split('$')[5] + 'Upgrades' # Grab upgrades
 
-                                    #print('%s' % _upgrades) # Debug
+                                    #print(data)
 
+                                    print('\33[1;92m[Online]\033[0m %s for %s (%s) | User: %s' % (_upgrades, addr[0], _key, _user)) # Debug
+                                    
+                                    #print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + _user.rjust(15) + addr[0].rjust(15) + _upgrades.rjust(20))
                                     # Read Available keys
                                     try:
                                         _keylist = open('keys-available.csv').read()
@@ -119,8 +122,8 @@ def main_controller():
                                     if _key in _keylist:
 
                                         _keylist = _keylist.replace(_key, '%s,%s,%s' % (_key, addr[0], addr[1]))
-                                        print(_keylist)
-                                        print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + _upgrades.rjust(20))
+                                        #print(_keylist)
+                                        #print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + _upgrades.rjust(20))
 
                                         # Replace line in keylist
                                         with open('keys-available.csv', 'w') as f:
