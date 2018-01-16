@@ -25,6 +25,8 @@ Help:
     /show online\t\t| Show all Online clients
     /show offline\t\t| Show all Offine clients
     exit\t\t\t| Terminate the service
+
+    PMU\tCopyright (C) 2018\tIncoming Security
 '''
 
 def gen_string(size=6, chars=string.ascii_uppercase + string.digits):
