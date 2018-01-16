@@ -74,10 +74,6 @@ def main_controller():
                     #Send broadcast to let clients know a new client connected
                     #broadcast(server_socket, sock, "\r" + "[%s:%s] Connected" % addr)
 
-                    # Check whitelist for allowed connections
-                        # Deny access
-                        #socket_list.remove(sock)
-                        #print("[ BLOCKED ] %s:%s Not on whitelist!" % addr)
                 else:
                     try:
                         data = sock.recv(2048)
@@ -110,10 +106,9 @@ def main_controller():
                                     #print(data)
 
                                     print('\33[1;92m[Online]\033[0m %s for %s (%s) | User: %s' % (_upgrades, addr[0], _key, _user)) # Debug
-                                    with open(_logfile, 'a+') as f:
+                                    with open(_userslog, 'a+') as f:
                                         f.write('[Online] %s for %s (%s) | User: %s\n' % (_upgrades, addr[0], _key, _user))
                                         f.close()
-                                    #print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + _user.rjust(15) + addr[0].rjust(15) + _upgrades.rjust(20))
 
                                     # Read Available keys
                                     try:
@@ -125,7 +120,7 @@ def main_controller():
                                     if _key in _keylist:
 
                                         _keylist = _keylist.replace(_key, '%s,%s,%s' % (_key, addr[0], addr[1]))
-                                        #print(_keylist)
+
                                         #print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + _upgrades.rjust(20))
 
                                         # Replace line in keylist
@@ -156,8 +151,13 @@ def main_controller():
                             if sock in socket_list:
                                 socket_list.remove(sock)
 
+                            _online_status = open(_userslog).readlines()
+
+                            # Replace line [Online] with [Offline]
+                            # *Do Magic*
+
                             #broadcast(server_socket, sock, "Connection with [%s:%s] interrupted" % addr)
-                            print('\33[1;91m[Offline]\033[0m' + _key.rjust(10) + socket.gethostbyaddr(addr[0])[0].rjust(15) + _user.rjust(15) + addr[0].rjust(15) + 'PACKAGE STATUS'.rjust(20))
+                            print('\33[1;91m[Offline]\033[0m ' + addr[0])
                             #print("[-] %s:%s Disconnected" % addr)
 
                     except Exception as e:
