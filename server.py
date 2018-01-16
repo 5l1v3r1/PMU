@@ -110,8 +110,11 @@ def main_controller():
                                     #print(data)
 
                                     print('\33[1;92m[Online]\033[0m %s for %s (%s) | User: %s' % (_upgrades, addr[0], _key, _user)) # Debug
-                                    
+                                    with open(_logfile, 'a+') as f:
+                                        f.write('[Online] %s for %s (%s) | User: %s\n' % (_upgrades, addr[0], _key, _user))
+                                        f.close()
                                     #print('\33[1;92m[Online]\033[0m' + _key.rjust(10) + _user.rjust(15) + addr[0].rjust(15) + _upgrades.rjust(20))
+
                                     # Read Available keys
                                     try:
                                         _keylist = open('keys-available.csv').read()
@@ -136,7 +139,7 @@ def main_controller():
                                             socket_list.remove(sock)
 
                                     with open(_userslog, 'a+') as f:
-                                        f.write('[Online],' + _key + ',' + socket.gethostbyaddr(addr[0])[0] + ',' + _user + ',' + addr[0] + ',' + 'PACKAGE STATUS\n')
+                                        f.write('[Online],' + _key + ',' + socket.gethostbyaddr(addr[0])[0] + ',' + _user + ',' + addr[0] + ',' + _upgrades + '\n')
                                         f.close()
 
                                 elif data.split('$')[1] == 'online':
