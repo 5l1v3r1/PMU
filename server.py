@@ -132,11 +132,7 @@ def main_controller():
                                         print('\033[1;91m[ERROR]\033[0m Invalid key entrered from %s (kicked from the server)' % addr[0])
                                         if sock in socket_list:
                                             socket_list.remove(sock)
-
-                                    with open(_userslog, 'a+') as f:
-                                        f.write('[Online],' + _key + ',' + socket.gethostbyaddr(addr[0])[0] + ',' + _user + ',' + addr[0] + ',' + _upgrades + '\n')
-                                        f.close()
-
+                                        
                                 elif data.split('$')[1] == 'online':
                                     for l in open(_userslog, 'r').readlines():
                                         if l.startswith('[Online]'):

