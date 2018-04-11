@@ -2,7 +2,7 @@
 # Connects with the server and send commands.
 # This will be the command shell
 
-import sys, socket, select, os, string, random, base64
+import sys, socket, select, os, string, random, base64, readline
 from Crypto import Random
 from Crypto.Cipher import AES
 
