@@ -1,8 +1,32 @@
 #!/usr/bin/python
-import os, sys, socket, time, threading, random, string, base64
+import os, sys, socket, time, threading, random, string, base64, select
 from Crypto import Random
 from Crypto.Cipher import AES
 from Tkinter import *
+
+BS = 256
+pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+unpad = lambda s : s[0:-ord(s[-1])]
+
+# AES Encryption
+class AESCipher:
+    def __init__(self, key ):
+        self.key = key
+
+    def encrypt(self, raw ):
+        raw = pad(raw)
+        iv = Random.new().read( AES.block_size )
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return base64.b64encode(iv + cipher.encrypt(raw))
+
+    def decrypt(self, enc ):
+        enc = base64.b64decode(enc)
+        iv = enc[:16]
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return unpad(cipher.decrypt( enc[16:]))
+
+global cipher
+cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f\xce*m]5\xde\xcd\xf2\xa6')
 
 class MainWindow(Tk):
     def __init__(self):
@@ -21,7 +45,11 @@ class MainWindow(Tk):
 
         # Set default options
         self.options['server'].set('127.0.0.1')
-        self.options['port'].set(8989)
+        self.options['port'].set(3435)
+
+        global s
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(2)
 
         # Start time thread
         time_thread = threading.Thread(target=self.date_time)
@@ -36,7 +64,7 @@ class MainWindow(Tk):
 
         Label(settings, text = 'Port').grid(row = 1, column = 1)
         Entry(settings, textvariable = self.options['port'], width = 30).grid(row = 1, column = 2)
-        connect_button = Button(settings, text = 'Connect', command = '', width = 20, height = 2).grid(row = 0, column = 3, rowspan = 2)
+        connect_button = Button(settings, text = 'Connect', command = self.connect, width = 20, height = 2).grid(row = 0, column = 3, rowspan = 2)
 
         Label(settings, text = 'Key').grid(row = 2, column = 1)
         Entry(settings, textvariable = self.options['key'], width = 30).grid(row = 2, column = 2)
@@ -55,10 +83,11 @@ class MainWindow(Tk):
         features.grid(row = 0, column = 2)
 
         Label(features, text = 'Execute command').grid(row = 0, column = 1)
-        Entry(features, textvariable = self.options['command'], width = 50).grid(row = 0, column = 2, columnspan = 3)
-        execute_button = Button(features, text = 'Execute', command = '', width = 20).grid(row = 0, column = 5)
+        self.options['command'] = Entry(features, textvariable = self.options['command'], width = 50)
+        self.options['command'].grid(row = 0, column = 2, columnspan = 3)
+        execute_button = Button(features, text = 'Execute', command = self.send_command, width = 20).grid(row = 0, column = 5)
 
-        clear_log = Button(features, text = 'Clear log', command = '', width = 20).grid(row = 1, column = 1)
+        clear_log = Button(features, text = 'Clear log', command = self.clear_log, width = 20).grid(row = 1, column = 1)
         save_log = Button(features, text = 'Save log', command = '', width = 20).grid(row = 2, column = 1)
         save_log = Button(features, text = 'List Available Keys', command = '', width = 20).grid(row = 3, column = 1)
 
@@ -68,11 +97,11 @@ class MainWindow(Tk):
         update_all = Button(features, text = 'Update All Clients', command = '', width = 20).grid(row = 1, column = 4)
         update = Button(features, text = 'Update Selected Client', command = '', width = 20).grid(row = 2, column = 4)
 
-        shutdown_all_button = Button(features, text = 'Shutdown All Client', command = '', width = 20).grid(row = 1, column = 5)
+        shutdown_all_button = Button(features, text = 'Shutdown All Client', command = self.shutdown_all, width = 20).grid(row = 1, column = 5)
         shutdown_button = Button(features, text = 'Shutdown Selected Client', command = '', width = 20).grid(row = 2, column = 5)
 
-        reboot_all = Button(features, text = 'Reboot All Client', command = '', width = 20).grid(row = 1, column = 5)
-        reboot = Button(features, text = 'Reboot Selected Client', command = '', width = 20).grid(row = 2, column = 5)
+        reboot_all = Button(features, text = 'Reboot All Client', command = self.reboot_all, width = 20).grid(row = 3, column = 5)
+        reboot = Button(features, text = 'Reboot Selected Client', command = '', width = 20).grid(row = 4, column = 5)
 
         server = LabelFrame(self, text = 'Server')
         server.grid(row = 0, column = 3)
@@ -87,13 +116,162 @@ class MainWindow(Tk):
         Label(client_frame, text = 'Client list').grid(row = 0, column = 1)
         self.options['clients'] = Listbox(client_frame, width = 120, height = 30).grid(row = 1, column = 1)
 
+        # Log Frame
         Label(client_frame, text = 'Log').grid(row = 0, column = 2)
         self.options['log'] = Text(client_frame, foreground = 'white', background = 'black', height = 32)
         self.options['log'].grid(row = 1, column = 2)
 
+        # Tags
+        self.options['log'].tag_configure('yellow', foreground='yellow') # Common Message
+        self.options['log'].tag_configure('red', foreground='red') # Error
+        self.options['log'].tag_configure('deeppink', foreground='deeppink') # Special
+        self.options['log'].tag_configure('orange', foreground='orange') # Danger
+        self.options['log'].tag_configure('green', foreground='green') # Ok
+        self.options['log'].tag_configure('bold', font='bold')
+
+    def connect(self):
+        try:
+            s.connect((self.options['server'].get(), self.options['port'].get()))
+
+            # Start time thread
+            server_thread = threading.Thread(target=self.keep_alive)
+            server_thread.daemon = True
+            server_thread.start()
+
+            self.options['log'].insert('1.0', '[%s %s] Connected to <%s:%s>' % (time.strftime('%x'), time.strftime('%X'), self.options['server'].get(), self.options['port'].get()), 'green')
+        except Exception as e:
+            self.options['log'].insert('1.0', '[ERROR] Failed to connect: %s\n' % e, 'red')
+
+    def keep_alive(self):
+        running = True
+        while running:
+            socket_list = [sys.stdin, s]
+
+            # Get the list sockets which are readable
+            read_sockets, write_sockets, error_sockets = select.select(socket_list , [], [])
+
+            for sock in read_sockets:
+                if sock == s:
+                    data = sock.recv(2048)
+                    data = cipher.decrypt(data)
+                    if not data:
+                        self.options['log'].insert('1.0', '[%s %s] Disconnected from server\n' % (time.strftime('%x'), time.strftime('%X')), 'red')
+                        sys.exit(1)
+                    else:
+                        # print data
+                        print('%s' % data)
+                        self.options['log'].insert('1.0', '%s\n' % data, 'yellow')
+                else:
+                    # user entered a message
+                    msg = sys.stdin.readline()
+
+                    if msg.startswith('?'):
+                        print(halp)
+                        
+                    elif msg.startswith('/help'):
+                        print(halp)
+
+                    elif msg.startswith('exit'):
+                        print('Exiting...'); sys.exit(0)
+                    elif msg.startswith('clear'):
+                        os.system('clear')
+
+                    elif msg.startswith('/genkey'):
+                        _new_key = gen_string()
+                        print('New key added: ' + _new_key)
+                        s.send(cipher.encrypt('KEY$' + _new_key))
+                        #print('\nComming Soon...\n')
+
+                    elif msg.startswith('/del'):
+                        print('\nComming Soon...\n')
+                        sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                    elif msg.startswith('/update '):
+                        msg = msg.rstrip()
+                        if 'all' in msg.split(' ')[1]:
+                            #s.send('COMMAND$apt-get update && apt-get upgrade -y')
+                            s.send(cipher.encrypt('COMMAND$apt-get update && apt-get upgrade -y'))
+
+                        else:
+                            s.send(cipher.encrypt('UPGRADE$' + msg.split(' ')[1]))
+
+                    elif msg.startswith('/save'):
+                        print('\nComming Soon...\n')
+
+                    elif msg.startswith('/connect'):
+                        print('\nComming Soon...\n')
+
+                    elif msg.startswith('/c'):
+                        msg = msg.replace('/c ', '').rstrip()
+                        s.send(cipher.encrypt('COMMAND$' + msg))
+                        #s.send('COMMAND$' + msg)
+
+                    elif msg.startswith('/shutdown '):
+                        s.send(cipher.encrypt('COMMAND$poweroff'))
+                        #s.send('COMMAND$poweroff')
+
+                    elif msg.startswith('/shutdown '):
+                        if 'all' in msg.split(' ')[1]:
+
+                            s.send(cipher.encrypt('COMMAND$poweroff'))
+
+                        else:
+                            s.send(cipher.encrypt('SHUTDOWN$' + msg.split(' ')[1]))
+
+                        #s.send('COMMAND$poweroff')
+
+                    elif msg.startswith('/reboot '):
+                        if 'all' in msg.split(' ')[1]:
+                            #s.send('COMMAND$apt-get update && apt-get upgrade -y')
+                            s.send(cipher.encrypt('COMMAND$reboot'))
+
+                        else:
+                            s.send(cipher.encrypt('REBOOT$' + msg.split(' ')[1]))
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+
+                        #s.send('COMMAND$reboot')
+
+                    elif msg.startswith('/show'):
+                        if 'online' in msg.split(' ')[1]:
+                            #s.send('SHOW$online')
+                            s.send(cipher.encrypt('SHOW$online'))
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        elif 'offline' in msg.split(' ')[1]:
+                            #s.send('SHOW$offline')
+                            s.send(cipher.encrypt('SHOW$offline'))
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        elif 'list' in msg.split(' ')[1]:
+                            s.send('SHOW$list')
+                            s.send(cipher.encrypt('SHOW$list'))
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        else:
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                    else:
+                        if msg.startswith('/'):
+                            s.send(msg)
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+                        else:
+                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
+
+    def send_command(self):
+        s.send(cipher.encrypt('COMMAND$' + self.options['command'].get()))
+        self.options['log'].insert('1.0', '[%s %s] Executed command on all clients: %s\n' % (time.strftime('%x'), time.strftime('%X'), self.options['command'].get()), 'yellow')
+        self.options['command'].delete(0, END)
+
+    def clear_log(self):
+        self.options['log'].delete('1.0', END)
+
+    def shutdown_all(self):
+        s.send(cipher.encrypt('COMMAND$poweroff'))
+        self.options['log'].insert('1.0', '[%s %s] Shutdown all client\n' % (time.strftime('%x'), time.strftime('%X')), 'yellow')
+
+    def reboot_all(self):
+        s.send(cipher.encrypt('COMMAND$reboot'))
+        self.options['log'].insert('1.0', '[%s %s] Rebooted all client\n' % (time.strftime('%x'), time.strftime('%X')), 'yellow')
+
     def create_key(self):
         key = gen_string()
         self.options['key'].set(key)
+
     def date_time(self):
         while True:
             self.title(string = '<< Remote Administration Tool | Control Panel  | %s %s >>' % (time.strftime('%x'), time.strftime('%X')))
