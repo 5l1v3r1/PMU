@@ -94,7 +94,7 @@ class MainWindow(Tk):
         shutdown_button = Button(features, text = 'Refresh client list', command = '', width = 20).grid(row = 1, column = 3)
         drop_shell = Button(features, text = 'Drop to Shell', command = '', width = 20).grid(row = 2, column = 3)
 
-        update_all = Button(features, text = 'Update All Clients', command = '', width = 20).grid(row = 1, column = 4)
+        update_all = Button(features, text = 'Update All Clients', command = self.update_all, width = 20).grid(row = 1, column = 4)
         update = Button(features, text = 'Update Selected Client', command = '', width = 20).grid(row = 2, column = 4)
 
         shutdown_all_button = Button(features, text = 'Shutdown All Client', command = self.shutdown_all, width = 20).grid(row = 1, column = 5)
@@ -161,101 +161,15 @@ class MainWindow(Tk):
                         # print data
                         print('%s' % data)
                         self.options['log'].insert('1.0', '%s\n' % data, 'yellow')
-                else:
-                    # user entered a message
-                    msg = sys.stdin.readline()
-
-                    if msg.startswith('?'):
-                        print(halp)
-                        
-                    elif msg.startswith('/help'):
-                        print(halp)
-
-                    elif msg.startswith('exit'):
-                        print('Exiting...'); sys.exit(0)
-                    elif msg.startswith('clear'):
-                        os.system('clear')
-
-                    elif msg.startswith('/genkey'):
-                        _new_key = gen_string()
-                        print('New key added: ' + _new_key)
-                        s.send(cipher.encrypt('KEY$' + _new_key))
-                        #print('\nComming Soon...\n')
-
-                    elif msg.startswith('/del'):
-                        print('\nComming Soon...\n')
-                        sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
-                    elif msg.startswith('/update '):
-                        msg = msg.rstrip()
-                        if 'all' in msg.split(' ')[1]:
-                            #s.send('COMMAND$apt-get update && apt-get upgrade -y')
-                            s.send(cipher.encrypt('COMMAND$apt-get update && apt-get upgrade -y'))
-
-                        else:
-                            s.send(cipher.encrypt('UPGRADE$' + msg.split(' ')[1]))
-
-                    elif msg.startswith('/save'):
-                        print('\nComming Soon...\n')
-
-                    elif msg.startswith('/connect'):
-                        print('\nComming Soon...\n')
-
-                    elif msg.startswith('/c'):
-                        msg = msg.replace('/c ', '').rstrip()
-                        s.send(cipher.encrypt('COMMAND$' + msg))
-                        #s.send('COMMAND$' + msg)
-
-                    elif msg.startswith('/shutdown '):
-                        s.send(cipher.encrypt('COMMAND$poweroff'))
-                        #s.send('COMMAND$poweroff')
-
-                    elif msg.startswith('/shutdown '):
-                        if 'all' in msg.split(' ')[1]:
-
-                            s.send(cipher.encrypt('COMMAND$poweroff'))
-
-                        else:
-                            s.send(cipher.encrypt('SHUTDOWN$' + msg.split(' ')[1]))
-
-                        #s.send('COMMAND$poweroff')
-
-                    elif msg.startswith('/reboot '):
-                        if 'all' in msg.split(' ')[1]:
-                            #s.send('COMMAND$apt-get update && apt-get upgrade -y')
-                            s.send(cipher.encrypt('COMMAND$reboot'))
-
-                        else:
-                            s.send(cipher.encrypt('REBOOT$' + msg.split(' ')[1]))
-                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
-
-                        #s.send('COMMAND$reboot')
-
-                    elif msg.startswith('/show'):
-                        if 'online' in msg.split(' ')[1]:
-                            #s.send('SHOW$online')
-                            s.send(cipher.encrypt('SHOW$online'))
-                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
-                        elif 'offline' in msg.split(' ')[1]:
-                            #s.send('SHOW$offline')
-                            s.send(cipher.encrypt('SHOW$offline'))
-                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
-                        elif 'list' in msg.split(' ')[1]:
-                            s.send('SHOW$list')
-                            s.send(cipher.encrypt('SHOW$list'))
-                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
-                        else:
-                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
-                    else:
-                        if msg.startswith('/'):
-                            s.send(msg)
-                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
-                        else:
-                            sys.stdout.write('#?\PMU\> '); sys.stdout.flush()
 
     def send_command(self):
         s.send(cipher.encrypt('COMMAND$' + self.options['command'].get()))
         self.options['log'].insert('1.0', '[%s %s] Executed command on all clients: %s\n' % (time.strftime('%x'), time.strftime('%X'), self.options['command'].get()), 'yellow')
         self.options['command'].delete(0, END)
+
+    def update_all(self):
+        s.send(cipher.encrypt('COMMAND$apt-get update && apt-get upgrade -y'))
+        self.options['log'].insert('1.0', '[%s %s] Updated all client\n' % (time.strftime('%x'), time.strftime('%X')), 'yellow')
 
     def clear_log(self):
         self.options['log'].delete('1.0', END)
@@ -271,6 +185,9 @@ class MainWindow(Tk):
     def create_key(self):
         key = gen_string()
         self.options['key'].set(key)
+        s.send(cipher.encrypt('KEY$' + _new_key))
+        self.options['log'].insert('1.0', '[%s %s] A new key was added: %s\n' % (key, time.strftime('%x'), time.strftime('%X')), 'yellow')
+
 
     def date_time(self):
         while True:
