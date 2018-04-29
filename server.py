@@ -48,8 +48,8 @@ class AESCipher:
 # AES secret
 cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f\xce*m]5\xde\xcd\xf2\xa6') # Key
 
-# SSL Encryption
-#*Do magic*
+all_sock = []
+all_addr = []
 
 # Server script
 def main_controller():
@@ -70,6 +70,10 @@ def main_controller():
                 if sock == server_socket:
                     sockfd, addr = server_socket.accept()
                     socket_list.append(sockfd)
+
+                    all_sock.append(sockfd)
+                    all_addr.append(addr)
+
 
                     #Send broadcast to let clients know a new client connected
                     #broadcast(server_socket, sock, "\r" + "[%s:%s] Connected" % addr)
@@ -103,9 +107,8 @@ def main_controller():
                                     _key = data.split('$')[3] # Grab Key
                                     _upgrades = data.split('$')[5] + 'Upgrades' # Grab upgrades
 
-                                    #print(data)
-
-                                    print('\33[1;92m[Online]\033[0m %s for %s (%s) | User: %s' % (_upgrades, addr[0], _key, _user)) # Debug
+                                    broadcast(server_socket, sock, cipher.encrypt('[Online] %s for %s (%s) | User: %s' % (_upgrades, addr[0], _key, _user)))
+                                    print('\33[1;92m[Online]\033[0m %s for %s (%s) | User: %s' % (_upgrades, addr[0], _key, _user))
                                     with open(_userslog, 'a+') as f:
                                         f.write('[Online] %s for %s (%s) | User: %s\n' % (_upgrades, addr[0], _key, _user))
                                         f.close()
@@ -132,7 +135,7 @@ def main_controller():
                                         print('\033[1;91m[ERROR]\033[0m Invalid key entrered from %s (kicked from the server)' % addr[0])
                                         if sock in socket_list:
                                             socket_list.remove(sock)
-                                        
+
                                 elif data.split('$')[1] == 'online':
                                     for l in open(_userslog, 'r').readlines():
                                         if l.startswith('[Online]'):
