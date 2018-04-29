@@ -1,6 +1,11 @@
 #!/usr/bin/python
 # Startup script for the clients to connect with the remote server.
 
+# FINAL INSTRUCTIONS
+# Commands are executed from the installation working directory
+# Commands cannot leave this working directory.
+# Example: you cannot do: ls /etc
+
 import sys, os, socket, select, time, datetime, getpass, base64, subprocess
 from Crypto import Random
 from Crypto.Cipher import AES
@@ -98,12 +103,34 @@ def connector():
                     # Run command
                     if data.split('$')[1].startswith('rm'):
                         print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
+                        server.send(cipher.encrypt('Command blocked'))
                     elif 'sudo' in data.split('$')[1]:
                         print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
+                        server.send(cipher.encrypt('Command blocked'))
                     else:
                         #os.system(data.split('$')[1])
-                        CMD = subprocess.check_output(data.split('$')[1], shell=True)
-                        server.send(cipher.encrypt(CMD))
+                        try:
+                            CMD = subprocess.check_output(data.split('$')[1], shell=True)
+                            server.send(cipher.encrypt(CMD))
+                        except Exception:
+                            server.send(cipher.encrypt('Command not found'))
+                            pass
+
+                elif 'YOUDO$' in data:
+                    if data.split('$')[1] == _key:
+                        if data.split('$')[2].startswith('rm'):
+                            print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
+                            server.send(cipher.encrypt('Command blocked'))
+                        elif 'sudo' in data.split('$')[2]:
+                            print('\033[1;94m[ INFO ]\033[0m Commanded Blocked: %s' % data.split('$')[1])
+                            server.send(cipher.encrypt('Command blocked'))
+                        else:
+                            try:
+                                CMD = subprocess.check_output(data.split('$')[2], shell=True)
+                                server.send(cipher.encrypt(CMD))
+                            except Exception:
+                                server.send(cipher.encrypt('Command not found'))
+                                pass
 
                 elif 'SHUTDOWN$' in data:
                     if data.split('$')[1] == _key:
