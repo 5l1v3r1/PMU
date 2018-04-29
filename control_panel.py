@@ -95,13 +95,13 @@ class MainWindow(Tk):
         drop_shell = Button(features, text = 'Drop to Shell', command = '', width = 20).grid(row = 2, column = 3)
 
         update_all = Button(features, text = 'Update All Clients', command = self.update_all, width = 20).grid(row = 1, column = 4)
-        update = Button(features, text = 'Update Selected Client', command = '', width = 20).grid(row = 2, column = 4)
+        update = Button(features, text = 'Update Selected Client', command = self.update_client, width = 20).grid(row = 2, column = 4)
 
         shutdown_all_button = Button(features, text = 'Shutdown All Client', command = self.shutdown_all, width = 20).grid(row = 1, column = 5)
-        shutdown_button = Button(features, text = 'Shutdown Selected Client', command = '', width = 20).grid(row = 2, column = 5)
+        shutdown_button = Button(features, text = 'Shutdown Selected Client', command = self.shutdown_client, width = 20).grid(row = 2, column = 5)
 
         reboot_all = Button(features, text = 'Reboot All Client', command = self.reboot_all, width = 20).grid(row = 3, column = 5)
-        reboot = Button(features, text = 'Reboot Selected Client', command = '', width = 20).grid(row = 4, column = 5)
+        reboot = Button(features, text = 'Reboot Selected Client', command = self.reboot_client, width = 20).grid(row = 4, column = 5)
 
         server = LabelFrame(self, text = 'Server')
         server.grid(row = 0, column = 3)
@@ -170,6 +170,13 @@ class MainWindow(Tk):
         self.options['log'].insert('1.0', '[%s %s] Executed command on all clients: %s\n' % (time.strftime('%x'), time.strftime('%X'), self.options['command'].get()), 'yellow')
         self.options['command'].delete(0, END)
 
+    def update_client(self):
+        selection = self.options['clients'].get(self.options['clients'].curselection())
+        selection = selection.split('(')[1]
+        selection = selection.split(')')[0] # Grab key
+        s.send(cipher.encrypt('UPGRADE$' + selection)) # Send update command
+        self.options['log'].insert('1.0', '[%s %s] Updated %s' % (time.strftime('%x'), time.strftime('%X'), selection), 'yellow')
+
     def update_all(self):
         s.send(cipher.encrypt('COMMAND$apt-get update && apt-get upgrade -y'))
         self.options['log'].insert('1.0', '[%s %s] Updated all client\n' % (time.strftime('%x'), time.strftime('%X')), 'yellow')
@@ -177,9 +184,23 @@ class MainWindow(Tk):
     def clear_log(self):
         self.options['log'].delete('1.0', END)
 
+    def shutdown_client(self):
+        selection = self.options['clients'].get(self.options['clients'].curselection())
+        selection = selection.split('(')[1]
+        selection = selection.split(')')[0] # Grab key
+        s.send(cipher.encrypt('SHUTDOWN$' + selection)) # Send poweroff command
+        self.options['log'].insert('1.0', '[%s %s] Updated %s' % (time.strftime('%x'), time.strftime('%X'), selection), 'yellow')
+
     def shutdown_all(self):
         s.send(cipher.encrypt('COMMAND$poweroff'))
         self.options['log'].insert('1.0', '[%s %s] Shutdown all client\n' % (time.strftime('%x'), time.strftime('%X')), 'yellow')
+
+    def reboot_client(self):
+        selection = self.options['clients'].get(self.options['clients'].curselection())
+        selection = selection.split('(')[1]
+        selection = selection.split(')')[0] # Grab key
+        s.send(cipher.encrypt('REBOOT$' + selection)) # Send reboot command
+        self.options['log'].insert('1.0', '[%s %s] Rebooted %s' % (time.strftime('%x'), time.strftime('%X'), selection), 'yellow')
 
     def reboot_all(self):
         s.send(cipher.encrypt('COMMAND$reboot'))
@@ -188,8 +209,8 @@ class MainWindow(Tk):
     def create_key(self):
         key = gen_string()
         self.options['key'].set(key)
-        s.send(cipher.encrypt('KEY$' + _new_key))
-        self.options['log'].insert('1.0', '[%s %s] A new key was added: %s\n' % (key, time.strftime('%x'), time.strftime('%X')), 'yellow')
+        s.send(cipher.encrypt('KEY$' + key))
+        self.options['log'].insert('1.0', '[%s %s] A new key was added: %s\n' % (time.strftime('%x'), time.strftime('%X'), key), 'yellow')
 
 
     def date_time(self):
