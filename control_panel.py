@@ -118,8 +118,6 @@ class MainWindow(Tk):
         self.options['clients'] = Listbox(client_frame, width = 120, height = 30)
         self.options['clients'].grid(row = 1, column = 1)
         self.options['clients'].bind("<Double-Button-1>", self.drop_to_shell)
-        self.options['clients'].insert(END, '[Online] 0 Upgrades for 127.0.0.1 (2DH6NA) | User: root')
-
 
         # Log Frame
         Label(client_frame, text = 'Log').grid(row = 0, column = 2)
