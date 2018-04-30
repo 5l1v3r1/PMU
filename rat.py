@@ -6,7 +6,7 @@
 # Commands cannot leave this working directory.
 # Example: you cannot do: ls /etc
 
-import sys, os, socket, select, time, datetime, getpass, base64, subprocess
+import sys, os, socket, select, time, datetime, getpass, base64, subprocess, threading
 from Crypto import Random
 from Crypto.Cipher import AES
 
@@ -53,6 +53,7 @@ cipher = AESCipher('<\x18\xadx\xbfp2\xf6\x9aH\xa3\xd3q}D\xe9\xce\\\xdf\x05XS\x7f
 
 # Connect to remote server
 def connector():
+    global server
     server = socket.socket(socket.AF_INET)
     server.settimeout(1)
 
@@ -61,14 +62,10 @@ def connector():
         print("Connected to %s on port %s" % (host, port))
         print("Listening...\n")
 
-        # Get package status
-        p = subprocess.Popen("sudo apt-get -u upgrade --assume-no | grep upgraded,", stdout=subprocess.PIPE, shell=True)
-        (output, err) = p.communicate()
-        p_status = p.wait()
-
-        #print(output.split('upgrade')[0]) # Debug
-
-        server.send(cipher.encrypt('USER$' + getpass.getuser() + '$KEY$' + _key + '$STATUS$' + output.split('upgrade')[0]))
+        # Start thread
+        thread = threading.Thread(target=send_package_status)
+        thread.daemon = True
+        thread.start()
 
     except Exception as e:
         print("\033[1;91m[ ! ]\033[0m Unable to connect to %s on port %s" % (host, port))
@@ -148,6 +145,19 @@ def connector():
     except Exception as e:
         print(e)
 
+def send_package_status():
+    while True:
+        # Send status every 10 minutes
+        
+        # Get package status
+        p = subprocess.Popen("sudo apt-get -u upgrade --assume-no | grep upgraded,", stdout=subprocess.PIPE, shell=True)
+        (output, err) = p.communicate()
+        p_status = p.wait()
+
+        #print(output.split('upgrade')[0]) # Debug
+
+        server.send(cipher.encrypt('USER$' + getpass.getuser() + '$KEY$' + _key + '$STATUS$' + output.split('upgrade')[0]))
+        time.sleep(600)
 # Starts script
 try:
     connector()
