@@ -53,25 +53,10 @@
 
 
 # Client installation:
-	Server IP \> 10.0.0.1
-	Port \> 3435
-	Authentication Key \> PTOV2
-	
-	*Do magic*
-
-	s.send(KEY$PTOV2)
-	
-	Add to list on remote server
-	
-	Startup >> Connect >> Send Key >> Authenticate >> Allow or deny socket
-	
 	Put the rat.py in start-up as Root
+	
+	sudo python rat.py <key>
 
 # Security
-	Future versions will have authentication.
-	
 	>> Sofar, 'rm' commands are blocked by the RAT.
 	>> Commands are encrypted
-	
-## Pentest
-	Now encrypted. Pentest ahead.
