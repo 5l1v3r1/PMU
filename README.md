@@ -23,9 +23,9 @@
 
 | Status        | Key    | Hostname| User   |  Ip address| Package Status       |
 | -------------  |:------| ------- |:-------| -----------|:---------------------|
-| [Online]       | FHT3Z | example | Dennis | 10.0.0.223 | 4 updates, 2 upgrades|
-| [Online]       | RTF56 | Kees    | Klaus  | 10.0.0.217 | 1 updates, 7 upgrades|
-| [Offline]      | PTOV2 | Piet    | None   | 10.0.0.215 | ? updates, ? upgrades|
+| [Online]       | FHT3Z | example | Dennis | 10.0.0.223 | 2 upgrades|
+| [Online]       | RTF56 | Kees    | Klaus  | 10.0.0.217 | 7 upgrades|
+| [Offline]      | PTOV2 | Piet    | None   | 10.0.0.215 | ? upgrades|
 
 								
 
