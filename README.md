@@ -60,3 +60,4 @@
 # Security
 	>> Sofar, 'rm' commands are blocked by the RAT.
 	>> Commands are encrypted
+	>> Drop Shell cannot reach outside working directory (example: cd /etc/).
