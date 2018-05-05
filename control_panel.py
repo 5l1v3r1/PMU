@@ -3,6 +3,7 @@ import os, sys, socket, time, threading, random, string, base64, select
 from Crypto import Random
 from Crypto.Cipher import AES
 from Tkinter import *
+from ttk import *
 
 BS = 256
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
@@ -33,7 +34,8 @@ class MainWindow(Tk):
         Tk.__init__(self)
         self.title(string = '<< Remote Administration Tool | Dashboard >>')
         self.resizable(0,0)
-        #self.geometry('1250x600')
+        self.style = Style()
+        self.style.theme_use("clam")
 
         self.options = {
             'server' : StringVar(),
@@ -65,7 +67,7 @@ class MainWindow(Tk):
 
         Label(settings, text = 'Port').grid(row = 1, column = 1)
         Entry(settings, textvariable = self.options['port'], width = 30).grid(row = 1, column = 2)
-        connect_button = Button(settings, text = 'Connect', command = self.connect, width = 20, height = 2).grid(row = 0, column = 3, rowspan = 2)
+        connect_button = Button(settings, text = 'Connect', command = self.connect, width = 20).grid(row = 0, column = 3, rowspan = 2)
 
         Label(settings, text = 'Key').grid(row = 2, column = 1)
         Entry(settings, textvariable = self.options['key'], width = 30).grid(row = 2, column = 2)
@@ -163,7 +165,10 @@ class MainWindow(Tk):
                     else:
                         # print data
                         if data.startswith('[Online]'):
-                            self.options['clients'].insert(END, data)
+                            # If already in list, ignore, else, append.
+                            if not data in self.options['clients'].get(0, END):
+                                self.options['clients'].insert(END, data)
+
                         else:
                             self.options['log'].insert('1.0', '%s\n' % data, 'yellow')
                             try:
