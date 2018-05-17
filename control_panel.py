@@ -36,6 +36,8 @@ class MainWindow(Tk):
         self.resizable(0,0)
         self.style = Style()
         self.style.theme_use("clam")
+        icon = PhotoImage(file='icon.png')
+        self.tk.call('wm', 'iconphoto', self._w, icon)
 
         self.options = {
             'server' : StringVar(),
