@@ -1,4 +1,9 @@
-# PMU (Beta test)
+Note:<br>
+This repository contains experimental code and a PoC.<br>
+All python code was written in Python 2.7.<br>
+I abandoned the project, no future updates or support.
+
+# PMU
 **P**ackage **M**anager **U**nlimited is a RAT for Linux coded with Python.
 
 ---
